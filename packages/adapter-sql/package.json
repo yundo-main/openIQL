@@ -1,6 +1,6 @@
 {
   "name": "@openiql/adapter-sql",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "OpenIQL AST to generic SQL (SQLite/MySQL/ANSI) transpiler",
   "keywords": [
     "openiql",
@@ -25,14 +25,14 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@openiql/core": "0.0.0"
+    "@openiql/core": "^0.1.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yundo-main/openIQL.git",
+    "url": "git+https://github.com/yundo-main/openIQL.git",
     "directory": "packages/adapter-sql"
   }
 }

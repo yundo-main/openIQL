@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] — v0.1
+## [0.1.0] — 2026-11-25
 
 ### Added
 - `@openiql/core`: dependency-free lexer, recursive-descent parser, AST types,
@@ -32,3 +32,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and the project a
   OpenSearch 2 (all Docker, skipped without Docker) and SQLite (`node:sqlite`).
 - Governance: Apache-2.0, clean-room/spec-first rules in `CONTRIBUTING.md`,
   DCO sign-off required on every commit (`npm run check:dco`).
+- Docs: `docs/MANUAL.md` Korean usage manual with SVG diagrams, per-package
+  READMEs for npm pages.
