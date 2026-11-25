@@ -4,11 +4,34 @@
   "description": "OpenIQL AST to parameterised PostgreSQL transpiler",
   "license": "Apache-2.0",
   "type": "module",
-  "keywords": ["openiql", "postgresql", "sql", "transpiler", "query-language"],
+  "keywords": [
+    "openiql",
+    "postgresql",
+    "sql",
+    "transpiler",
+    "query-language"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "LICENSE"],
-  "dependencies": { "@openiql/core": "0.0.0" },
-  "publishConfig": { "access": "public" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@openiql/core": "0.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yundo-main/openIQL.git",
+    "directory": "packages/adapter-postgres"
+  }
 }

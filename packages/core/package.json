@@ -4,10 +4,32 @@
   "description": "OpenIQL lexer, parser, schema validation, resolver and AST types",
   "license": "Apache-2.0",
   "type": "module",
-  "keywords": ["query-language", "parser", "lexer", "ast", "issue-tracker", "jql-alternative"],
+  "keywords": [
+    "query-language",
+    "parser",
+    "lexer",
+    "ast",
+    "issue-tracker",
+    "jql-alternative"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "LICENSE"],
-  "publishConfig": { "access": "public" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yundo-main/openIQL.git",
+    "directory": "packages/core"
+  }
 }
