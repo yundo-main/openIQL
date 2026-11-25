@@ -14,37 +14,37 @@
   </style>
 
   <!-- inputs -->
-  <rect class="box" x="20" y="50" width="160" height="50"/>
+  <rect class="box" rx="6" x="20" y="50" width="160" height="50"/>
   <text class="lbl" x="100" y="72" text-anchor="middle">?q=</text>
   <text class="sub" x="100" y="90" text-anchor="middle">status = Open AND ...</text>
 
-  <rect class="box" x="20" y="180" width="160" height="50"/>
+  <rect class="box" rx="6" x="20" y="180" width="160" height="50"/>
   <text class="lbl" x="100" y="202" text-anchor="middle">?filter=</text>
   <text class="sub" x="100" y="220" text-anchor="middle">JSON AST (UI 빌더)</text>
 
   <!-- core -->
-  <rect class="core" x="230" y="50" width="110" height="50"/>
+  <rect class="core" rx="6" x="230" y="50" width="110" height="50"/>
   <text class="lbl" x="285" y="72" text-anchor="middle">parse()</text>
   <text class="sub" x="285" y="90" text-anchor="middle">텍스트 → AST</text>
 
-  <rect class="core" x="380" y="115" width="130" height="50"/>
+  <rect class="core" rx="6" x="380" y="115" width="130" height="50"/>
   <text class="lbl" x="445" y="137" text-anchor="middle">resolve()</text>
   <text class="sub" x="445" y="155" text-anchor="middle">스키마 + 컨텍스트</text>
 
-  <rect class="core" x="550" y="115" width="130" height="50"/>
+  <rect class="core" rx="6" x="550" y="115" width="130" height="50"/>
   <text class="lbl" x="615" y="137" text-anchor="middle">ResolvedQuery</text>
   <text class="sub" x="615" y="155" text-anchor="middle">검증·함수평가 완료</text>
 
   <!-- adapters -->
-  <rect class="adap" x="720" y="25" width="105" height="50"/>
+  <rect class="adap" rx="6" x="720" y="25" width="105" height="50"/>
   <text class="lbl" x="772" y="47" text-anchor="middle" font-size="12">toPostgres()</text>
   <text class="sub" x="772" y="65" text-anchor="middle">$n 파라미터</text>
 
-  <rect class="adap" x="720" y="115" width="105" height="50"/>
+  <rect class="adap" rx="6" x="720" y="115" width="105" height="50"/>
   <text class="lbl" x="772" y="137" text-anchor="middle" font-size="12">toSql()</text>
   <text class="sub" x="772" y="155" text-anchor="middle">? 플레이스홀더</text>
 
-  <rect class="adap" x="720" y="205" width="105" height="50"/>
+  <rect class="adap" rx="6" x="720" y="205" width="105" height="50"/>
   <text class="lbl" x="772" y="227" text-anchor="middle" font-size="12">toOpenSearch()</text>
   <text class="sub" x="772" y="245" text-anchor="middle">_search body</text>
 
