@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { os } from './helpers.js';
 
 function dockerAvailable(): boolean {
@@ -101,12 +101,15 @@ describe.skipIf(!enabled)('OpenSearch semantics (real engine)', () => {
     base = `http://127.0.0.1:${port}`;
     for (let i = 0; ; i++) {
       try {
-        const res = await fetch(`${base}/_cluster/health`);
+        const res = await fetch(`${base}/_cluster/health`, { signal: AbortSignal.timeout(3000) });
         if (res.ok) break;
       } catch {
         /* not up yet */
       }
-      if (i > 150) throw new Error('OpenSearch did not start');
+      if (i > 260) {
+        const p = spawnSync('docker', ['logs', '--tail', '40', container], { encoding: 'utf8' });
+        throw new Error(`OpenSearch did not start. Container logs:\n${p.stdout}${p.stderr}`);
+      }
       await new Promise((r) => setTimeout(r, 1000));
     }
     await req('PUT', `/${INDEX}`, MAPPING);
@@ -122,7 +125,7 @@ describe.skipIf(!enabled)('OpenSearch semantics (real engine)', () => {
     if (!res.ok || (await res.json() as { errors: boolean }).errors) {
       throw new Error(`bulk index failed: ${await res.text()}`);
     }
-  }, 300_000);
+  }, 480_000);
 
   afterAll(() => {
     if (container) execFileSync('docker', ['rm', '-f', container], { stdio: 'ignore' });
