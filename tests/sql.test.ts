@@ -58,18 +58,18 @@ describe('comparison operators (sqlite)', () => {
 });
 
 describe('dialects', () => {
-  it('sqlite: custom fields use json_extract with a bound path', () => {
+  it('sqlite: custom fields use json_extract with an inlined path literal', () => {
     const out = sql('cf.story_points > 3');
-    expect(out.where).toBe("json_extract(issues.custom_fields, ?) > ?");
-    expect(out.params).toEqual(['$.story_points', 3]);
+    expect(out.where).toBe("json_extract(issues.custom_fields, '$.story_points') > ?");
+    expect(out.params).toEqual([3]);
   });
   it('mysql: custom fields use JSON_UNQUOTE(JSON_EXTRACT) + CAST', () => {
     const out = sql('cf.story_points > 3', { dialect: 'mysql' });
     expect(out.where).toBe(
-      'CAST(JSON_UNQUOTE(JSON_EXTRACT(issues.custom_fields, ?)) AS DECIMAL(65,30)) > ?',
+      "CAST(JSON_UNQUOTE(JSON_EXTRACT(issues.custom_fields, '$.story_points')) AS DECIMAL(65,30)) > ?",
     );
     const str = sql('cf.team = Platform', { dialect: 'mysql' });
-    expect(str.where).toBe('JSON_UNQUOTE(JSON_EXTRACT(issues.custom_fields, ?)) = ?');
+    expect(str.where).toBe("JSON_UNQUOTE(JSON_EXTRACT(issues.custom_fields, '$.team')) = ?");
   });
   it('ansi: custom fields are rejected, core fields still work', () => {
     expect(() => sql('cf.team = a', { dialect: 'ansi' })).toThrow(/ansi/);

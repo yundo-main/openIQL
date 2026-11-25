@@ -19,6 +19,7 @@
     "@types/node": "^22.0.0",
     "@types/pg": "^8.23.1",
     "fast-check": "^3.23.0",
+    "mysql2": "^3.24.6",
     "pg": "^8.23.1",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"

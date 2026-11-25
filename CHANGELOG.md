@@ -27,8 +27,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and the project a
 - Docs: `docs/API.md` public API reference, `docs/LEGAL-NOTES.md` IP review.
 - DoS limits: 2,048-byte query cap, paren depth 10, `IN` list 100, ORDER BY 10
   items, JSON AST depth 1,000.
-- Tests: 116 cases — parser, resolver, security, request, OpenSearch, real
-  PostgreSQL (skipped without Docker) and real SQLite (`node:sqlite`)
-  integration suites.
+- Tests: 136 cases — parser, resolver, security, request, OpenSearch, plus
+  real-database integration suites for PostgreSQL, MariaDB/MySQL (`mysql2`),
+  OpenSearch 2 (all Docker, skipped without Docker) and SQLite (`node:sqlite`).
 - Governance: Apache-2.0, clean-room/spec-first rules in `CONTRIBUTING.md`,
   DCO sign-off required on every commit (`npm run check:dco`).

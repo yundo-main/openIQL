@@ -265,7 +265,8 @@ open-iql/
 * `sqlite`/`mysql`/`ansi` 세 방언을 지원하며, 파라미터는 `?` 플레이스홀더입니다.
 * `!=`는 `(col <> ? OR col IS NULL)`로 변환해 NULL 행을 포함합니다(ANSI `IS DISTINCT FROM` 미지원 방언 호환). `NOT (...)`, `NOT IN`, `!~`는 `NOT COALESCE(...)`로 동일하게 NULL을 포함합니다.
 * `~`는 `LOWER(col) LIKE LOWER(?) ESCAPE '\'`로 변환합니다(방언별 대소문자 collation 차이 흡수, `%`/`_`/`\\` 이스케이프).
-* 커스텀 필드: `sqlite`는 `json_extract(cf, ?)`(네이티브 타입 유지), `mysql`은 `JSON_UNQUOTE(JSON_EXTRACT(cf, ?))` + NUMBER/DATE는 `CAST` 적용. `ansi` 방언은 JSON 함수가 표준이 아니므로 커스텀 필드를 지원하지 않습니다(사용 시 에러).
+* 커스텀 필드: `sqlite`는 `json_extract(cf, '$.key')`(네이티브 타입 유지), `mysql`은 `JSON_UNQUOTE(JSON_EXTRACT(cf, '$.key'))` + NUMBER/DATE는 `CAST` 적용. JSON 경로의 키는 스키마에서 검증된 식별자이므로 리터럴로 인라인됩니다(값만 바인딩). `ansi` 방언은 JSON 함수가 표준이 아니므로 커스텀 필드를 지원하지 않습니다(사용 시 에러).
+* `mysql` 방언은 DATE 파라미터를 `YYYY-MM-DD HH:MM:SS`(UTC)로 바인딩합니다 — MySQL이 ISO-8601의 `Z` 접미사를 받아들이지 않기 때문입니다. DATETIME 컬럼은 UTC 저장이 전제입니다.
 * 이력 연산자는 표준 `EXISTS` 서브쿼리로 세 방언 공통입니다.
 
 ### HTTP API 규격 (`?q=` / `?filter=`)

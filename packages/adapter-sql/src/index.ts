@@ -98,14 +98,16 @@ class Builder {
       const e = `${this.table}.${f.column}`;
       return { raw: e, typed: e };
     }
+    // The JSON path is a string literal: `f.column` is a schema-whitelisted
+    // identifier (/^[A-Za-z_]\w*$/), so it can never contain a quote.
     switch (this.dialect) {
       case 'sqlite': {
         // json_extract preserves native types, so no cast is needed.
-        const e = `json_extract(${this.table}.${this.customCol}, ${this.bind(`$.${f.column}`)})`;
+        const e = `json_extract(${this.table}.${this.customCol}, '$.${f.column}')`;
         return { raw: e, typed: e };
       }
       case 'mysql': {
-        const raw = `JSON_UNQUOTE(JSON_EXTRACT(${this.table}.${this.customCol}, ${this.bind(`$.${f.column}`)}))`;
+        const raw = `JSON_UNQUOTE(JSON_EXTRACT(${this.table}.${this.customCol}, '$.${f.column}'))`;
         const cast = MYSQL_CAST[f.type];
         return { raw, typed: cast ? `CAST(${raw} AS ${cast})` : raw };
       }
@@ -117,6 +119,10 @@ class Builder {
   }
 
   private scalar(v: ResolvedValue): string {
+    // MySQL rejects ISO-8601 'T'/'Z' markers; bind UTC 'YYYY-MM-DD HH:MM:SS' instead.
+    if (v.kind === 'date' && this.dialect === 'mysql') {
+      return this.bind(v.value.replace('T', ' ').replace(/(\.\d+)?Z$/, ''));
+    }
     return this.bind(v.value);
   }
 
@@ -127,7 +133,10 @@ class Builder {
   }
 
   private like(typed: string, v: ResolvedValue): string {
-    return `LOWER(${typed}) LIKE LOWER(${this.bind(`%${escapeLike(String(v.value))}%`)}) ESCAPE '\\'`;
+    // MySQL string literals process backslash escapes, so the escape char itself
+    // must be doubled there ('\\' in SQL text); sqlite/ansi accept a bare '\'.
+    const esc = this.dialect === 'mysql' ? "ESCAPE '\\\\'" : "ESCAPE '\\'";
+    return `LOWER(${typed}) LIKE LOWER(${this.bind(`%${escapeLike(String(v.value))}%`)}) ${esc}`;
   }
 
   node(n: ResolvedNode): string {
@@ -199,9 +208,9 @@ class Builder {
  * Transpiles a resolved query into parameterised SQL with `?` placeholders,
  * portable across SQLite, MySQL and ANSI-ish engines.
  *
- * Every user-supplied value (and custom-field JSON path) is a bind parameter.
- * The only interpolated text is identifiers from the trusted schema/options,
- * validated against a strict identifier pattern.
+ * Every user-supplied value is a bind parameter. The only interpolated text is
+ * identifiers and custom-field JSON paths from the trusted schema/options,
+ * all validated against a strict identifier pattern.
  *
  * Semantics: `!=`/`NOT IN`/`NOT`/`!~` match NULL rows (portable `IS DISTINCT
  * FROM` emulation); `~` is `LOWER() LIKE` so it is case-insensitive regardless
