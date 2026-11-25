@@ -16,6 +16,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - name: Pre-pull database images for integration tests
+        run: |
+          docker pull postgres:16-alpine &
+          docker pull mariadb:11 &
+          docker pull opensearchproject/opensearch:2 &
+          wait
       - run: npm test
 
   dco:
