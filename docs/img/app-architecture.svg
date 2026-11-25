@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="400" viewBox="0 0 840 400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+  </defs>
+  <style>
+    .layer { fill: #f6f8fa; stroke: #57606a; rx: 8; }
+    .core { fill: #ddf4ff; stroke: #0969da; rx: 6; }
+    .item { fill: #ffffff; stroke: #8c959f; rx: 6; }
+    .db { fill: #fff8c5; stroke: #9a6700; rx: 6; }
+    .lbl { fill: #1f2328; }
+    .sub { fill: #57606a; font-size: 11px; }
+    .cap { fill: #57606a; font-size: 12px; font-weight: bold; }
+  </style>
+
+  <!-- UI layer -->
+  <rect class="layer" x="20" y="15" width="800" height="80"/>
+  <text class="cap" x="40" y="38">프론트엔드 (직접 구현)</text>
+  <rect class="item" x="40" y="48" width="240" height="34"/>
+  <text class="lbl" x="160" y="69" text-anchor="middle">검색창 — ?q= 텍스트</text>
+  <rect class="item" x="300" y="48" width="240" height="34"/>
+  <text class="lbl" x="420" y="69" text-anchor="middle">필터 빌더 — ?filter= AST</text>
+  <rect class="item" x="560" y="48" width="240" height="34"/>
+  <text class="lbl" x="680" y="69" text-anchor="middle">보드 · 목록 · 이슈 상세</text>
+
+  <!-- API layer -->
+  <rect class="layer" x="20" y="135" width="800" height="130"/>
+  <text class="cap" x="40" y="158">API 서버 (직접 구현)</text>
+
+  <rect class="item" x="40" y="170" width="170" height="50"/>
+  <text class="lbl" x="125" y="192" text-anchor="middle">인증 세션</text>
+  <text class="sub" x="125" y="210" text-anchor="middle">→ ctx.userId</text>
+
+  <rect class="core" x="240" y="170" width="170" height="50"/>
+  <text class="lbl" x="325" y="192" text-anchor="middle">analyzeRequest()</text>
+  <text class="sub" x="325" y="210" text-anchor="middle">?q= / ?filter= → resolved</text>
+
+  <rect class="core" x="440" y="170" width="170" height="50"/>
+  <text class="lbl" x="525" y="192" text-anchor="middle">toPostgres() 등</text>
+  <text class="sub" x="525" y="210" text-anchor="middle">+ paramOffset 권한 병합</text>
+
+  <rect class="item" x="640" y="170" width="160" height="50"/>
+  <text class="lbl" x="720" y="192" text-anchor="middle">워크플로우/CRUD</text>
+  <text class="sub" x="720" y="210" text-anchor="middle">상태 전이 → 이력 기록</text>
+
+  <!-- DB layer -->
+  <rect class="db" x="240" y="320" width="170" height="55"/>
+  <text class="lbl" x="325" y="343" text-anchor="middle">PostgreSQL</text>
+  <text class="sub" x="325" y="361" text-anchor="middle">issues + custom_fields</text>
+
+  <rect class="db" x="440" y="320" width="170" height="55"/>
+  <text class="lbl" x="525" y="343" text-anchor="middle">issue_changelogs</text>
+  <text class="sub" x="525" y="361" text-anchor="middle">WAS / CHANGED 소스</text>
+
+  <rect class="db" x="640" y="320" width="160" height="55"/>
+  <text class="lbl" x="720" y="343" text-anchor="middle">OpenSearch</text>
+  <text class="sub" x="720" y="361" text-anchor="middle">nested changelogs</text>
+
+  <!-- arrows -->
+  <line x1="160" y1="95" x2="300" y2="165" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="420" y1="95" x2="340" y2="165" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="680" y1="95" x2="730" y2="165" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="210" y1="195" x2="235" y2="195" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="410" y1="195" x2="435" y2="195" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="525" y1="220" x2="325" y2="315" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="525" y1="220" x2="525" y2="315" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="720" y1="220" x2="720" y2="315" stroke="#57606a" marker-end="url(#arr2)"/>
+  <line x1="610" y1="195" x2="635" y2="195" stroke="#57606a" marker-end="url(#arr2)"/>
+
+  <text class="cap" x="40" y="300">파란색 = OpenIQL이 담당 · 나머지 = 앱이 구현</text>
+</svg>

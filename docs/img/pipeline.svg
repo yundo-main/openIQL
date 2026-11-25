@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="270" viewBox="0 0 840 270" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill: #f6f8fa; stroke: #57606a; rx: 6; }
+    .core { fill: #ddf4ff; stroke: #0969da; rx: 6; }
+    .adap { fill: #dafbe1; stroke: #1a7f37; rx: 6; }
+    .lbl { fill: #1f2328; }
+    .sub { fill: #57606a; font-size: 11px; }
+    .cap { fill: #57606a; font-size: 11px; font-style: italic; }
+  </style>
+
+  <!-- inputs -->
+  <rect class="box" x="20" y="50" width="160" height="50"/>
+  <text class="lbl" x="100" y="72" text-anchor="middle">?q=</text>
+  <text class="sub" x="100" y="90" text-anchor="middle">status = Open AND ...</text>
+
+  <rect class="box" x="20" y="180" width="160" height="50"/>
+  <text class="lbl" x="100" y="202" text-anchor="middle">?filter=</text>
+  <text class="sub" x="100" y="220" text-anchor="middle">JSON AST (UI 빌더)</text>
+
+  <!-- core -->
+  <rect class="core" x="230" y="50" width="110" height="50"/>
+  <text class="lbl" x="285" y="72" text-anchor="middle">parse()</text>
+  <text class="sub" x="285" y="90" text-anchor="middle">텍스트 → AST</text>
+
+  <rect class="core" x="380" y="115" width="130" height="50"/>
+  <text class="lbl" x="445" y="137" text-anchor="middle">resolve()</text>
+  <text class="sub" x="445" y="155" text-anchor="middle">스키마 + 컨텍스트</text>
+
+  <rect class="core" x="550" y="115" width="130" height="50"/>
+  <text class="lbl" x="615" y="137" text-anchor="middle">ResolvedQuery</text>
+  <text class="sub" x="615" y="155" text-anchor="middle">검증·함수평가 완료</text>
+
+  <!-- adapters -->
+  <rect class="adap" x="720" y="25" width="105" height="50"/>
+  <text class="lbl" x="772" y="47" text-anchor="middle" font-size="12">toPostgres()</text>
+  <text class="sub" x="772" y="65" text-anchor="middle">$n 파라미터</text>
+
+  <rect class="adap" x="720" y="115" width="105" height="50"/>
+  <text class="lbl" x="772" y="137" text-anchor="middle" font-size="12">toSql()</text>
+  <text class="sub" x="772" y="155" text-anchor="middle">? 플레이스홀더</text>
+
+  <rect class="adap" x="720" y="205" width="105" height="50"/>
+  <text class="lbl" x="772" y="227" text-anchor="middle" font-size="12">toOpenSearch()</text>
+  <text class="sub" x="772" y="245" text-anchor="middle">_search body</text>
+
+  <!-- arrows -->
+  <line x1="180" y1="75" x2="225" y2="75" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="180" y1="205" x2="375" y2="152" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="340" y1="75" x2="375" y2="122" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="510" y1="140" x2="545" y2="140" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="680" y1="130" x2="715" y2="60" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="680" y1="140" x2="715" y2="140" stroke="#57606a" marker-end="url(#arr)"/>
+  <line x1="680" y1="152" x2="715" y2="222" stroke="#57606a" marker-end="url(#arr)"/>
+
+  <text class="cap" x="285" y="30" text-anchor="middle">@openiql/core</text>
+  <text class="cap" x="445" y="200" text-anchor="middle">스키마 미등록 필드 · 타입 오류 → 검증 에러</text>
+  <text class="cap" x="772" y="15" text-anchor="middle">어댑터 (백엔드별)</text>
+</svg>

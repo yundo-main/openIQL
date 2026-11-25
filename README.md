@@ -17,6 +17,7 @@ const { sql, params } = toPostgres(resolved); // run with pg: client.query(sql, 
 const { body } = toOpenSearch(resolved);      // run with opensearch: client.search({ index, body })
 ```
 
+- **Usage manual (한국어): [docs/MANUAL.md](docs/MANUAL.md)**
 - Spec: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [spec/grammar.ebnf](spec/grammar.ebnf)
 - API: [docs/API.md](docs/API.md)
 - Legal review notes: [docs/LEGAL-NOTES.md](docs/LEGAL-NOTES.md)
