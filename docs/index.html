@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenIQL — Open Issue Query Language</title>
+<meta name="description" content="JQL 스타일의 검색 쿼리 언어를 파싱해 안전한 파라미터화 SQL·OpenSearch 쿼리로 변환하는 오픈소스 라이브러리">
+<style>
+  :root { --ink:#1f2328; --sub:#57606a; --line:#d0d7de; --accent:#0969da; --code:#f6f8fa; --green:#1a7f37; }
+  * { box-sizing: border-box; margin: 0; }
+  body { color: var(--ink); font-family: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif; line-height: 1.6; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  code { background: var(--code); border-radius: 4px; padding: 0 .35em; font-size: .9em; }
+  pre { background: #0d1117; color: #e6edf3; border-radius: 10px; padding: 16px 20px; font-size: .92rem; line-height: 1.55; overflow-x: auto; }
+  pre .c { color: #8b949e; } pre .k { color: #ff7b72; } pre .s { color: #a5d6ff; } pre .fn { color: #d2a8ff; }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  nav { position: sticky; top: 0; background: #ffffffee; backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); z-index: 10; }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 56px; }
+  nav .logo { font-weight: 700; font-size: 1.1rem; font-family: ui-monospace, Menlo, monospace; }
+  nav a.navlink { color: var(--sub); font-size: .95rem; }
+  nav a.navlink:hover { color: var(--ink); }
+  nav .spacer { flex: 1; }
+  nav .btn { font-size: .9rem; }
+
+  .hero { text-align: center; padding: 88px 0 64px; }
+  .hero h1 { font-size: 3.6rem; font-family: ui-monospace, Menlo, monospace; letter-spacing: -1px; }
+  .hero h1 span { color: var(--accent); }
+  .hero .tag { font-size: 1.4rem; color: var(--sub); margin: 14px 0 30px; }
+  .hero .install { display: inline-block; text-align: left; margin-bottom: 30px; }
+  .btns { display: flex; gap: 12px; justify-content: center; }
+  .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-weight: 600;
+    border: 1px solid var(--line); color: var(--ink); background: var(--code); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  section.block { padding: 56px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 1.9rem; margin-bottom: 20px; }
+  h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; background: #fff; }
+  .card .icon { font-size: 1.5rem; font-family: ui-monospace, monospace; color: var(--accent); }
+  .card p { color: var(--sub); font-size: .95rem; margin-top: 6px; }
+
+  .demo .q { font-family: ui-monospace, Menlo, monospace; font-size: 1.05rem; background: var(--code);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; margin-bottom: 14px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: -1px; }
+  .tabs button { border: 1px solid var(--line); border-bottom: none; background: var(--code); color: var(--sub);
+    padding: 7px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: .9rem; }
+  .tabs button.on { background: #0d1117; color: #fff; border-color: #0d1117; }
+  .demo pre { border-radius: 0 10px 10px 10px; }
+  .pane { display: none; } .pane.on { display: block; }
+
+  img.diagram { max-width: 100%; margin: 18px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  th, td { border: 1px solid var(--line); padding: 8px 14px; text-align: left; }
+  th { background: var(--code); }
+  ul.tight li { margin: 5px 0; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--sub); font-size: .9rem; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 760px) { .grid3, .cols { grid-template-columns: 1fr; } .hero h1 { font-size: 2.6rem; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="logo">open<span style="color:var(--accent)">IQL</span></span>
+    <a class="navlink" href="MANUAL.md">Manual</a>
+    <a class="navlink" href="API.md">API</a>
+    <a class="navlink" href="slides/integration-manual.html">Slides</a>
+    <a class="navlink" href="ARCHITECTURE.md">Spec</a>
+    <span class="spacer"></span>
+    <a class="btn" href="https://github.com/yundo-main/openIQL">GitHub</a>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <h1>open<span>IQL</span></h1>
+  <p class="tag">JQL 스타일의 검색 쿼리 언어를, 당신의 서비스에 그대로.</p>
+  <div class="install"><pre>npm install @openiql/core @openiql/adapter-postgres</pre></div>
+  <div class="btns">
+    <a class="btn primary" href="MANUAL.md">연동 매뉴얼 (한국어)</a>
+    <a class="btn" href="slides/integration-manual.html">슬라이드 보기</a>
+    <a class="btn" href="https://github.com/yundo-main/openIQL">GitHub →</a>
+  </div>
+</header>
+
+<section class="block"><div class="wrap">
+  <h2>검색창에 붙이는 쿼리 언어</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="icon">q → AST</div>
+      <h3>쿼리 언어 제공</h3>
+      <p><code>status = Open AND assignee = currentUser()</code> 같은 이슈 쿼리 문법 — 파서·검증기·함수 평가 내장.</p>
+    </div>
+    <div class="card">
+      <div class="icon">$n / ?</div>
+      <h3>안전한 변환</h3>
+      <p>모든 사용자 값은 바인딩 파라미터. 스키마 화이트리스트와 DoS 한도가 기본 탑재 — 문자열 결합 SQL 없음.</p>
+    </div>
+    <div class="card">
+      <div class="icon">⟶ DB</div>
+      <h3>백엔드 무관</h3>
+      <p>같은 쿼리가 PostgreSQL·SQLite·MySQL·OpenSearch로 변환됩니다. 어댑터만 바꾸면 됩니다.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2>하나의 쿼리, 세 개의 백엔드</h2>
+  <div class="demo">
+    <div class="q">project = PROJ AND status != Done ORDER BY created DESC</div>
+    <div class="tabs">
+      <button class="on" data-p="pg">PostgreSQL</button>
+      <button data-p="sql">SQLite / MySQL</button>
+      <button data-p="os">OpenSearch</button>
+    </div>
+    <div class="pane on" id="p-pg"><pre>SELECT issues.* FROM issues
+WHERE <span class="k">(</span>issues.project_key = <span class="fn">$1</span>
+  <span class="k">AND</span> issues.status <span class="k">IS DISTINCT FROM</span> <span class="fn">$2</span><span class="k">)</span>
+ORDER BY issues.created_at <span class="k">DESC</span>
+<span class="c">-- params: ['PROJ', 'Done']</span></pre></div>
+    <div class="pane" id="p-sql"><pre>SELECT issues.* FROM issues
+WHERE <span class="k">(</span>issues.project_key = <span class="fn">?</span>
+  <span class="k">AND</span> <span class="k">(</span>issues.status <span class="k">&lt;&gt;</span> <span class="fn">?</span> <span class="k">OR</span> issues.status <span class="k">IS NULL</span><span class="k">))</span>
+ORDER BY issues.created_at <span class="k">DESC</span>
+<span class="c">-- params: ['PROJ', 'Done']</span></pre></div>
+    <div class="pane" id="p-os"><pre>{ <span class="s">"query"</span>: { <span class="s">"bool"</span>: {
+    <span class="s">"must"</span>: [{ <span class="s">"term"</span>: { <span class="s">"project_key.keyword"</span>: <span class="s">"PROJ"</span> } }],
+    <span class="s">"must_not"</span>: [{ <span class="s">"term"</span>: { <span class="s">"status.keyword"</span>: <span class="s">"Done"</span> } }]
+  }},
+  <span class="s">"sort"</span>: [{ <span class="s">"created_at"</span>: { <span class="s">"order"</span>: <span class="s">"desc"</span> } }] }</pre></div>
+  </div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2>연동 구조</h2>
+  <img class="diagram" src="img/pipeline.svg" alt="pipeline">
+  <p style="color:var(--sub)">라이브러리로 포함 — 별도 서버 없이 API 핸들러 안에서 함수 호출로 동작합니다.
+  <code>?q=</code> 텍스트와 <code>?filter=</code> JSON AST를 하나의 엔드포인트(<code>analyzeRequest</code>)로 받고,
+  권한 스코프는 <code>paramOffset</code>으로 WHERE에 병합합니다.</p>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2>어댑터</h2>
+  <table>
+    <tr><th>패키지</th><th>출력</th><th>특징</th></tr>
+    <tr><td><code>@openiql/adapter-postgres</code></td><td><code>{ sql, params }</code> · <code>$n</code></td><td>IS DISTINCT FROM · ILIKE · EXISTS 이력 서브쿼리</td></tr>
+    <tr><td><code>@openiql/adapter-sql</code></td><td><code>{ sql, params }</code> · <code>?</code></td><td>sqlite / mysql / ansi 방언, JSON 커스텀 필드</td></tr>
+    <tr><td><code>@openiql/adapter-opensearch</code></td><td><code>{ body }</code></td><td>.keyword 주소지정 · nested changelog · wildcard</td></tr>
+  </table>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2>검증됨</h2>
+  <ul class="tight">
+    <li><b>136개 테스트</b> — PostgreSQL 16 · MariaDB 11 · OpenSearch 2 · node:sqlite 실DB 통합 스위트 포함 (CI 실행)</li>
+    <li><b>보안 기본값</b> — 스키마 화이트리스트, 값 바인딩, 쿼리 2KB·깊이·목록 한도</li>
+    <li><b>클린룸 + DCO</b> — 모든 기여에 Signed-off-by, <a href="LEGAL-NOTES.md">법무 검토 기록</a> 공개</li>
+    <li><b>Apache-2.0</b>, <code>@openiql/core</code>는 런타임 무의존성 — 브라우저 번들 포함 가능</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  OpenIQL — Apache-2.0 ·
+  <a href="https://github.com/yundo-main/openIQL">GitHub</a> ·
+  <a href="MANUAL.md">Manual</a> ·
+  <a href="API.md">API</a> ·
+  <a href="slides/integration-manual.html">Slides</a> ·
+  <a href="LEGAL-NOTES.md">Legal notes</a>
+</div></footer>
+
+<script>
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + b.dataset.p));
+  }));
+</script>
+</body>
+</html>
