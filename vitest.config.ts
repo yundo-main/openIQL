@@ -9,6 +9,7 @@ export default defineConfig({
       '@openiql/core': r('./packages/core/src/index.ts'),
       '@openiql/adapter-postgres': r('./packages/adapter-postgres/src/index.ts'),
       '@openiql/adapter-opensearch': r('./packages/adapter-opensearch/src/index.ts'),
+      '@openiql/adapter-sql': r('./packages/adapter-sql/src/index.ts'),
     },
   },
   test: { include: ['tests/**/*.test.ts'] },

@@ -1,11 +1,14 @@
 {
   "name": "@openiql/adapter-opensearch",
   "version": "0.0.0",
+  "description": "OpenIQL AST to OpenSearch Query DSL transpiler",
   "license": "Apache-2.0",
   "type": "module",
+  "keywords": ["openiql", "opensearch", "elasticsearch", "transpiler", "query-language"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist"],
-  "dependencies": { "@openiql/core": "0.0.0" }
+  "files": ["dist", "LICENSE"],
+  "dependencies": { "@openiql/core": "0.0.0" },
+  "publishConfig": { "access": "public" }
 }

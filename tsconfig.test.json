@@ -8,7 +8,8 @@
     "paths": {
       "@openiql/core": ["./packages/core/src/index.ts"],
       "@openiql/adapter-postgres": ["./packages/adapter-postgres/src/index.ts"],
-      "@openiql/adapter-opensearch": ["./packages/adapter-opensearch/src/index.ts"]
+      "@openiql/adapter-opensearch": ["./packages/adapter-opensearch/src/index.ts"],
+      "@openiql/adapter-sql": ["./packages/adapter-sql/src/index.ts"]
     }
   },
   "include": ["tests/**/*.ts", "vitest.config.ts"]

@@ -1,6 +1,7 @@
 import { createSchema, analyze, type ResolveOptions } from '@openiql/core';
 import { toPostgres, type PostgresOptions } from '@openiql/adapter-postgres';
 import { toOpenSearch, type OpenSearchOptions } from '@openiql/adapter-opensearch';
+import { toSql, type SqlOptions } from '@openiql/adapter-sql';
 
 export const schema = createSchema({
   fields: {
@@ -26,6 +27,11 @@ export function pg(q: string, opts: PostgresOptions = {}, ro: ResolveOptions = {
 export function os(q: string, opts: OpenSearchOptions = {}, ro: ResolveOptions = {}) {
   const { resolved } = analyze(q, schema, { context: ctx, ...ro });
   return toOpenSearch(resolved, opts);
+}
+
+export function sql(q: string, opts: SqlOptions = {}, ro: ResolveOptions = {}) {
+  const { resolved } = analyze(q, schema, { context: ctx, ...ro });
+  return toSql(resolved, opts);
 }
 
 /** Strips span info so ASTs can be compared structurally. */

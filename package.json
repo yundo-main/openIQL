@@ -9,8 +9,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch",
-    "typecheck": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch && tsc -p tsconfig.test.json",
+    "build": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch packages/adapter-sql",
+    "typecheck": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch packages/adapter-sql && tsc -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "check:dco": "sh scripts/check-dco.sh"

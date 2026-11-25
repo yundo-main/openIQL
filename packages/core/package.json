@@ -1,10 +1,13 @@
 {
   "name": "@openiql/core",
   "version": "0.0.0",
+  "description": "OpenIQL lexer, parser, schema validation, resolver and AST types",
   "license": "Apache-2.0",
   "type": "module",
+  "keywords": ["query-language", "parser", "lexer", "ast", "issue-tracker", "jql-alternative"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist"]
+  "files": ["dist", "LICENSE"],
+  "publishConfig": { "access": "public" }
 }

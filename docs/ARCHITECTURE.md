@@ -211,14 +211,17 @@ open-iql/
 ├── spec/
 │   └── grammar.ebnf            # 공식 EBNF 문법 정의 파일
 ├── packages/
-│   ├── core/                   # 무의존성 Lexer, Recursive Descent Parser, AST 타입 정의
+│   ├── core/                   # 무의존성 Lexer, Recursive Descent Parser, AST 타입 정의, HTTP 진입점
 │   ├── adapter-postgres/       # AST -> PostgreSQL(JSONB 포함) Parameterized SQL 변환기
+│   ├── adapter-sql/            # AST -> 범용 SQL(SQLite/MySQL/ANSI) 변환기
 │   └── adapter-opensearch/     # AST -> OpenSearch Query DSL 변환기
 └── tests/
     ├── parser.test.ts              # 연산자 우선순위, 괄호 중첩, 에러 위치 반환 검증
     ├── resolver.test.ts            # 스키마 검증, 타입 강제, 함수 평가 검증
     ├── security.test.ts            # SQL Injection 차단, 화이트리스트 검증, DoS 임계치 검증
     ├── opensearch.test.ts          # OpenSearch Query DSL 변환 검증
+    ├── sql.test.ts                 # 범용 SQL 변환 + 실제 SQLite 종단 검증 (node:sqlite)
+    ├── request.test.ts             # ?q=/?filter= HTTP 진입점 검증
     └── postgres.integration.test.ts# 실제 PostgreSQL 대상 종단 검증 (Docker 필요, 없으면 skip)
 ```
 
@@ -242,6 +245,7 @@ open-iql/
 | 8 | 쿼리 길이 제한은 UTF-8 바이트 기준 | 한글 등 멀티바이트 입력 |
 | 9 | 시간 함수는 Validator에서 평가해 바인딩 파라미터로 전달 (`DATE_TRUNC(NOW())` 미사용) | 결정적 테스트, 시간대 일관성 |
 | 10 | 추가 제한: ORDER BY 항목 10개, JSON AST 깊이 1000 | 신뢰할 수 없는 JSON AST 방어 |
+| 11 | 범용 SQL 방언(sqlite/mysql/ansi) 및 `?q=`/`?filter=` 진입점 명세 추가 | §2 파이프라인의 "대상 DB"와 §1 API 규격 구체화 |
 
 ### Postgres 의미 규정
 * `=`, `<`, `>` 등은 NULL과 매치하지 않고, `!=`는 NULL을 포함합니다(`IS DISTINCT FROM`). `NOT (...)`도 NULL 행을 포함합니다.
@@ -256,3 +260,15 @@ open-iql/
 * `!=`, `!~`, `NOT IN`, `NOT (...)`는 `bool.must_not`으로 변환되며 필드가 없는 문서도 매치합니다(Postgres의 NULL-포함 의미와 동일).
 * `IS EMPTY`는 `must_not: exists` 이고 `STRING` 필드는 `term: ""` 도 포함합니다. `IS NOT EMPTY`는 `exists` 이고 `STRING` 필드는 `""`가 아님을 추가로 요구합니다.
 * `WAS`/`CHANGED`는 `nested` 필드(기본 경로 `changelogs`, 하위 `field`/`from_value`/`to_value` keyword 필드)에 대한 `nested` 쿼리로 변환됩니다. 변경 이력을 별도 인덱스에 두는 배포에서는 이력 연산자를 사용할 수 없습니다.
+
+### 범용 SQL (adapter-sql) 의미 규정
+* `sqlite`/`mysql`/`ansi` 세 방언을 지원하며, 파라미터는 `?` 플레이스홀더입니다.
+* `!=`는 `(col <> ? OR col IS NULL)`로 변환해 NULL 행을 포함합니다(ANSI `IS DISTINCT FROM` 미지원 방언 호환). `NOT (...)`, `NOT IN`, `!~`는 `NOT COALESCE(...)`로 동일하게 NULL을 포함합니다.
+* `~`는 `LOWER(col) LIKE LOWER(?) ESCAPE '\'`로 변환합니다(방언별 대소문자 collation 차이 흡수, `%`/`_`/`\\` 이스케이프).
+* 커스텀 필드: `sqlite`는 `json_extract(cf, ?)`(네이티브 타입 유지), `mysql`은 `JSON_UNQUOTE(JSON_EXTRACT(cf, ?))` + NUMBER/DATE는 `CAST` 적용. `ansi` 방언은 JSON 함수가 표준이 아니므로 커스텀 필드를 지원하지 않습니다(사용 시 에러).
+* 이력 연산자는 표준 `EXISTS` 서브쿼리로 세 방언 공통입니다.
+
+### HTTP API 규격 (`?q=` / `?filter=`)
+* `?q=<text>`: 텍스트 쿼리 → `parse` → `resolve` 파이프라인.
+* `?filter=<json>`: UI 필터 빌더의 표준 JSON AST(§5) → JSON 파싱 후 `resolve`(신뢰할 수 없는 AST로 검증·깊이 제한 적용). 이미 파싱된 객체도 허용합니다.
+* 두 파라미터를 동시에 지정하면 `ValidationError`. 둘 다 없으면 조건 없는 전체 조회(`match_all`/`WHERE` 없음)입니다.

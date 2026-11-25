@@ -13,6 +13,7 @@ export * from './resolved.js';
 export * from './functions.js';
 export * from './resolver.js';
 export * from './printer.js';
+export * from './request.js';
 
 /** Parse + validate + resolve in one step. Throws OpenIQLError subclasses. */
 export function analyze(

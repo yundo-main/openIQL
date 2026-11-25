@@ -18,5 +18,6 @@ const { body } = toOpenSearch(resolved);      // run with opensearch: client.sea
 ```
 
 - Spec: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [spec/grammar.ebnf](spec/grammar.ebnf)
+- API: [docs/API.md](docs/API.md)
 - Legal review notes: [docs/LEGAL-NOTES.md](docs/LEGAL-NOTES.md)
 - `npm test` (the PostgreSQL integration test needs Docker and is skipped without it)
