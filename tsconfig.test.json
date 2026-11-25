@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "declaration": false,
+    "types": ["node"],
+    "paths": {
+      "@openiql/core": ["./packages/core/src/index.ts"],
+      "@openiql/adapter-postgres": ["./packages/adapter-postgres/src/index.ts"],
+      "@openiql/adapter-opensearch": ["./packages/adapter-opensearch/src/index.ts"]
+    }
+  },
+  "include": ["tests/**/*.ts", "vitest.config.ts"]
+}

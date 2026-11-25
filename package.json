@@ -1,0 +1,26 @@
+{
+  "name": "open-iql",
+  "private": true,
+  "version": "0.0.0",
+  "description": "OpenIQL - Open Issue Query Language engine",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch",
+    "typecheck": "tsc -b packages/core packages/adapter-postgres packages/adapter-opensearch && tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:dco": "sh scripts/check-dco.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
+    "fast-check": "^3.23.0",
+    "pg": "^8.23.1",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

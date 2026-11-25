@@ -1,0 +1,40 @@
+(* OpenIQL grammar v0.1 -- keywords are case-insensitive; whitespace separates tokens.
+   Precedence: ( ) > NOT > AND > OR *)
+
+Query         ::= Expression? OrderByClause? EOF
+
+Expression    ::= OrExpr
+OrExpr        ::= AndExpr ( "OR" AndExpr )*
+AndExpr       ::= NotExpr ( "AND" NotExpr )*
+NotExpr       ::= "NOT" NotExpr | PrimaryExpr
+PrimaryExpr   ::= "(" Expression ")" | Condition
+
+Condition     ::= Field ComparisonOp Value
+                | Field ListOp "(" ValueList ")"
+                | Field NullOp
+                | Field HistoryOp
+
+ComparisonOp  ::= "=" | "!=" | ">" | ">=" | "<" | "<=" | "~" | "!~"
+ListOp        ::= "IN" | "NOT" "IN"
+NullOp        ::= "IS" "EMPTY" | "IS" "NOT" "EMPTY"
+HistoryOp     ::= "WAS" Value | "CHANGED" ( "FROM" Value )? ( "TO" Value )?
+
+ValueList     ::= Value ( "," Value )*
+Value         ::= StringLiteral | NumberLiteral | BooleanLiteral | FunctionCall | Identifier
+FunctionCall  ::= Identifier "(" ( ArgList )? ")"
+ArgList       ::= Arg ( "," Arg )*
+Arg           ::= StringLiteral | NumberLiteral | BooleanLiteral | DurationLiteral | Identifier   (* no nested calls *)
+
+OrderByClause ::= "ORDER" "BY" OrderItem ( "," OrderItem )*
+OrderItem     ::= Field ( "ASC" | "DESC" )?
+
+Field         ::= Identifier ( "." Identifier )?
+Identifier    ::= [a-zA-Z_][a-zA-Z0-9_]*          (* must not be a reserved keyword *)
+StringLiteral ::= '"' Char* '"' | "'" Char* "'"   (* Char: any char except the quote and "\", or an escape *)
+Escape        ::= "\\" | "\"" | "\'"
+NumberLiteral ::= "-"? [0-9]+ ( "." [0-9]+ )?
+DurationLiteral ::= [+-]? [0-9]+ [smhdw]          (* only valid as a function argument *)
+BooleanLiteral::= "true" | "false"
+
+Keyword       ::= "AND" | "OR" | "NOT" | "IN" | "IS" | "EMPTY" | "WAS" | "CHANGED"
+                | "FROM" | "TO" | "ORDER" | "BY" | "ASC" | "DESC"
