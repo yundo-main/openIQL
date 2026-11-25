@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OpenIQL — Open Issue Query Language</title>
 <meta name="description" content="JQL 스타일의 검색 쿼리 언어를 파싱해 안전한 파라미터화 SQL·OpenSearch 쿼리로 변환하는 오픈소스 라이브러리">
+<meta property="og:title" content="OpenIQL — Open Issue Query Language">
+<meta property="og:description" content="JQL 스타일 검색 쿼리 → 안전한 SQL/OpenSearch 변환. 클린룸 오픈소스, Apache-2.0.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yundo-main.github.io/openIQL/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230969da'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='bold' fill='white' text-anchor='middle'%3EIQ%3C/text%3E%3C/svg%3E">
 <style>
   :root { --ink:#1f2328; --sub:#57606a; --line:#d0d7de; --accent:#0969da; --code:#f6f8fa; --green:#1a7f37; }
   * { box-sizing: border-box; margin: 0; }
@@ -66,10 +71,10 @@
 <nav>
   <div class="wrap">
     <span class="logo">open<span style="color:var(--accent)">IQL</span></span>
-    <a class="navlink" href="MANUAL.md">Manual</a>
-    <a class="navlink" href="API.md">API</a>
+    <a class="navlink" href="https://github.com/yundo-main/openIQL/blob/main/docs/MANUAL.md">Manual</a>
+    <a class="navlink" href="https://github.com/yundo-main/openIQL/blob/main/docs/API.md">API</a>
     <a class="navlink" href="slides/integration-manual.html">Slides</a>
-    <a class="navlink" href="ARCHITECTURE.md">Spec</a>
+    <a class="navlink" href="https://github.com/yundo-main/openIQL/blob/main/docs/ARCHITECTURE.md">Spec</a>
     <span class="spacer"></span>
     <a class="btn" href="https://github.com/yundo-main/openIQL">GitHub</a>
   </div>
@@ -78,9 +83,10 @@
 <header class="hero wrap">
   <h1>open<span>IQL</span></h1>
   <p class="tag">JQL 스타일의 검색 쿼리 언어를, 당신의 서비스에 그대로.</p>
-  <div class="install"><pre>npm install @openiql/core @openiql/adapter-postgres</pre></div>
+  <div class="install"><pre>npm install @openiql/core @openiql/adapter-postgres</pre>
+<p style="color:var(--sub); font-size:.85rem; margin-top:6px">npm 배포 준비 중 — 현재는 GitHub에서 확인 가능합니다</p></div>
   <div class="btns">
-    <a class="btn primary" href="MANUAL.md">연동 매뉴얼 (한국어)</a>
+    <a class="btn primary" href="https://github.com/yundo-main/openIQL/blob/main/docs/MANUAL.md">연동 매뉴얼 (한국어)</a>
     <a class="btn" href="slides/integration-manual.html">슬라이드 보기</a>
     <a class="btn" href="https://github.com/yundo-main/openIQL">GitHub →</a>
   </div>
@@ -157,7 +163,7 @@ ORDER BY issues.created_at <span class="k">DESC</span>
   <ul class="tight">
     <li><b>136개 테스트</b> — PostgreSQL 16 · MariaDB 11 · OpenSearch 2 · node:sqlite 실DB 통합 스위트 포함 (CI 실행)</li>
     <li><b>보안 기본값</b> — 스키마 화이트리스트, 값 바인딩, 쿼리 2KB·깊이·목록 한도</li>
-    <li><b>클린룸 + DCO</b> — 모든 기여에 Signed-off-by, <a href="LEGAL-NOTES.md">법무 검토 기록</a> 공개</li>
+    <li><b>클린룸 + DCO</b> — 모든 기여에 Signed-off-by, <a href="https://github.com/yundo-main/openIQL/blob/main/docs/LEGAL-NOTES.md">법무 검토 기록</a> 공개</li>
     <li><b>Apache-2.0</b>, <code>@openiql/core</code>는 런타임 무의존성 — 브라우저 번들 포함 가능</li>
   </ul>
 </div></section>
@@ -165,10 +171,10 @@ ORDER BY issues.created_at <span class="k">DESC</span>
 <footer><div class="wrap">
   OpenIQL — Apache-2.0 ·
   <a href="https://github.com/yundo-main/openIQL">GitHub</a> ·
-  <a href="MANUAL.md">Manual</a> ·
-  <a href="API.md">API</a> ·
+  <a href="https://github.com/yundo-main/openIQL/blob/main/docs/MANUAL.md">Manual</a> ·
+  <a href="https://github.com/yundo-main/openIQL/blob/main/docs/API.md">API</a> ·
   <a href="slides/integration-manual.html">Slides</a> ·
-  <a href="LEGAL-NOTES.md">Legal notes</a>
+  <a href="https://github.com/yundo-main/openIQL/blob/main/docs/LEGAL-NOTES.md">Legal notes</a>
 </div></footer>
 
 <script>
