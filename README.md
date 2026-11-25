@@ -18,6 +18,7 @@ const { body } = toOpenSearch(resolved);      // run with opensearch: client.sea
 ```
 
 - **Usage manual (한국어): [docs/MANUAL.md](docs/MANUAL.md)**
+- Integration slides: [docs/slides/integration-manual.html](docs/slides/integration-manual.html) (브라우저로 열면 바로 발표 가능)
 - Spec: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [spec/grammar.ebnf](spec/grammar.ebnf)
 - API: [docs/API.md](docs/API.md)
 - Legal review notes: [docs/LEGAL-NOTES.md](docs/LEGAL-NOTES.md)

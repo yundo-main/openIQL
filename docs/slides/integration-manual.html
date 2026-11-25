@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenIQL 연동 메뉴얼</title>
+<style>
+  :root { --ink:#1f2328; --sub:#57606a; --line:#d0d7de; --accent:#0969da; --bg:#ffffff; --code:#f6f8fa; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", sans-serif; }
+  section { display: none; height: 100vh; padding: 6vh 8vw; flex-direction: column; justify-content: center; }
+  section.active { display: flex; }
+  h1 { font-size: 3.4rem; margin: 0 0 .4em; }
+  h2 { font-size: 2.2rem; margin: 0 0 .7em; color: var(--accent); }
+  h3 { font-size: 1.2rem; margin: 1em 0 .4em; }
+  p, li { font-size: 1.35rem; line-height: 1.55; }
+  ul { margin: .3em 0; padding-left: 1.3em; }
+  li { margin: .35em 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  code { background: var(--code); border-radius: 4px; padding: 0 .35em; font-size: .9em; }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 22px; font-size: 1.02rem; line-height: 1.5; overflow-x: auto; margin: .6em 0; }
+  pre .c { color: var(--sub); }
+  table { border-collapse: collapse; font-size: 1.15rem; margin: .5em 0; }
+  th, td { border: 1px solid var(--line); padding: .45em .9em; text-align: left; }
+  th { background: var(--code); }
+  .sub { color: var(--sub); }
+  .title { text-align: center; }
+  .title .sub { font-size: 1.5rem; }
+  .cols { display: flex; gap: 3vw; align-items: flex-start; }
+  .cols > div { flex: 1; }
+  img.diagram { max-width: 100%; max-height: 55vh; margin: .5em auto; display: block; }
+  .tag { display: inline-block; background: var(--code); border: 1px solid var(--line);
+    border-radius: 20px; padding: .2em .9em; margin: .2em .3em .2em 0; font-size: 1.1rem; }
+  .pager { position: fixed; right: 22px; bottom: 16px; color: var(--sub); font-size: .95rem;
+    font-family: ui-monospace, Menlo, monospace; }
+  .hint { position: fixed; left: 22px; bottom: 16px; color: var(--sub); font-size: .95rem; }
+  .kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px;
+    padding: 0 .4em; font-size: .9em; background: var(--code); }
+  @media print {
+    section { display: flex !important; height: auto; min-height: 90vh; page-break-after: always; }
+    .pager, .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="active title">
+  <h1>OpenIQL 연동 메뉴얼</h1>
+  <p class="sub">Jira 스타일 검색 기능을 우리 서비스에 붙이는 방법</p>
+  <p class="sub" style="margin-top:3em">v0.1.0 · Apache-2.0</p>
+</section>
+
+<section>
+  <h2>1. OpenIQL이 하는 일</h2>
+  <p>사용자의 쿼리 문자열을 <b>검증된 AST</b>로 파싱하고, 각 백엔드의 <b>파라미터화된 실행 쿼리</b>로 변환합니다.</p>
+  <img class="diagram" src="../img/pipeline.svg" alt="pipeline">
+  <ul>
+    <li>라이브러리(npm) — 별도 서버·사이드카 없이 앱 프로세스 안에서 함수 호출</li>
+    <li>쿼리 변환만 담당 — <b>실행·인증·권한·UI는 앱의 몫</b></li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. 설치 — 필요한 것만</h2>
+  <pre>npm install @openiql/core                  <span class="c"># 필수 (런타임 무의존성)</span>
+npm install @openiql/adapter-postgres    <span class="c"># PostgreSQL</span>
+npm install @openiql/adapter-sql         <span class="c"># SQLite / MySQL / ANSI</span>
+npm install @openiql/adapter-opensearch  <span class="c"># OpenSearch</span></pre>
+  <p class="sub">@openiql/core는 브라우저 번들에 넣어도 됨 — 프론트의 print()/parse() 재사용 가능</p>
+</section>
+
+<section>
+  <h2>3. 스키마 = 검색 가능 필드 화이트리스트</h2>
+  <pre>const schema = createSchema({
+  fields: {
+    project:  { type: 'STRING', column: 'project_key' },
+    status:   { type: 'STRING' },
+    assignee: { type: 'STRING', column: 'assignee_id' },
+    created:  { type: 'DATE',   column: 'created_at' },
+    points:   { type: 'NUMBER' },
+    resolved: { type: 'BOOLEAN' },
+  },
+  customFields: { story_points: { type: 'NUMBER' } },  <span class="c">// cf.story_points</span>
+});</pre>
+  <ul>
+    <li>여기 없는 필드는 쿼리에서 <b>거부</b> — 인젝션 1차 방어선</li>
+    <li><code>~</code>는 STRING만, <code>&lt; &gt;</code>는 NUMBER·DATE만 허용</li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. 쿼리 언어 치트시트</h2>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>구문</th><th>예시</th></tr>
+        <tr><td><code>= !=</code> (NULL 포함)</td><td><code>status = Open</code></td></tr>
+        <tr><td><code>&gt; &gt;= &lt; &lt;=</code></td><td><code>points &gt;= 3</code></td></tr>
+        <tr><td><code>~ !~</code> 부분문자열</td><td><code>summary ~ login</code></td></tr>
+        <tr><td><code>IN / NOT IN</code></td><td><code>status IN (Open, Done)</code></td></tr>
+        <tr><td><code>IS EMPTY</code></td><td><code>assignee IS EMPTY</code></td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>구문</th><th>예시</th></tr>
+        <tr><td><code>WAS</code> 이력</td><td><code>status WAS "In Progress"</code></td></tr>
+        <tr><td><code>CHANGED</code></td><td><code>CHANGED TO Done</code></td></tr>
+        <tr><td>논리</td><td><code>AND OR NOT ( )</code></td></tr>
+        <tr><td>정렬</td><td><code>ORDER BY created DESC</code></td></tr>
+        <tr><td>함수</td><td><code>currentUser() startOfDay(-7d)</code></td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="sub">키워드는 대소문자 무관 · 예약어·공백 포함 값은 따옴표 필수</p>
+</section>
+
+<section>
+  <h2>5. 최소 연동 — 5줄</h2>
+  <pre><span class="c">// GET /issues?q=project+=+PROJ+AND+assignee+=+currentUser()</span>
+const { resolved } = analyze(q, schema, {
+  context: { userId: req.user.id, now: new Date() },
+});
+const { sql, params } = toPostgres(resolved, { tieBreaker: 'id' });
+const { rows } = await client.query(sql, params);</pre>
+  <ul>
+    <li><code>ctx.userId</code> → <code>currentUser()</code> 치환, <code>ctx.now</code> → 시간 함수 기준 (UTC)</li>
+    <li>모든 사용자 값은 바인딩 파라미터 — 문자열 결합 없음</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. HTTP 진입점 — 하나의 엔드포인트</h2>
+  <pre><span class="c">// analyzeRequest() 가 두 입력을 한 곳으로 받는다</span>
+analyzeRequest(
+  { q: req.query.q, filter: req.query.filter },
+  schema, { context }
+);</pre>
+  <table>
+    <tr><th>요청</th><th>동작</th></tr>
+    <tr><td><code>?q=status = Open</code></td><td>텍스트 파싱 → resolve</td></tr>
+    <tr><td><code>?filter={...}</code></td><td>JSON AST → 스키마 재검증 → resolve</td></tr>
+    <tr><td>둘 다 지정</td><td><code>ValidationError</code></td></tr>
+    <tr><td>둘 다 없음</td><td>전체 검색 (match-all)</td></tr>
+  </table>
+  <p class="sub">에러는 <code>e.toJSON()</code> — <code>{error, message, location}</code> 그대로 400 응답 가능</p>
+</section>
+
+<section>
+  <h2>7. 권한 스코프 병합 — paramOffset 패턴</h2>
+  <p>OpenIQL은 "누가 볼 수 있는가"를 모릅니다. 앱이 WHERE에 권한 조건을 붙입니다:</p>
+  <pre>const { where, orderBy, params } = toPostgres(resolved, { paramOffset: 1 });
+const sql = `SELECT * FROM issues
+  WHERE project_key = ANY($1)${where ? ` AND (${where})` : ''} ${orderBy}`;
+await client.query(sql, [allowedProjects, ...params]);</pre>
+  <p class="sub">앱 파라미터가 $1을 먼저 쓰고, OpenIQL 파라미터는 $2부터 이어짐</p>
+</section>
+
+<section>
+  <h2>8. DB 준비물 — WAS / CHANGED</h2>
+  <div class="cols">
+    <div>
+      <h3>SQL 계열: 이력 테이블</h3>
+      <pre>CREATE TABLE issue_changelogs (
+  issue_id int REFERENCES issues(id),
+  field text NOT NULL,
+  from_value text, to_value text,
+  changed_at timestamptz DEFAULT now()
+);</pre>
+    </div>
+    <div>
+      <h3>OpenSearch: 매핑</h3>
+      <ul>
+        <li>STRING 필드에 <code>keyword</code> 서브필드</li>
+        <li><code>changelogs</code>는 <code>nested</code> 타입</li>
+        <li><code>custom_fields</code>는 <code>object</code></li>
+      </ul>
+      <p class="sub">전체 매핑: tests/opensearch.integration.test.ts 의 MAPPING</p>
+    </div>
+  </div>
+  <p><b>중요:</b> 상태 전이 시 앱이 이력을 기록해야 합니다 — 기록 없으면 <code>WAS</code>/<code>CHANGED</code>는 빈 결과</p>
+</section>
+
+<section>
+  <h2>9. 어댑터 선택</h2>
+  <table>
+    <tr><th>어댑터</th><th>출력</th><th>이럴 때</th></tr>
+    <tr><td><code>toPostgres</code></td><td><code>$n</code> 바인딩 SQL</td><td>PostgreSQL이 주 DB</td></tr>
+    <tr><td><code>toSql</code></td><td><code>?</code> 플레이스홀더</td><td>SQLite·MySQL·범용 SQL (ansi)</td></tr>
+    <tr><td><code>toOpenSearch</code></td><td><code>_search</code> body</td><td>전문검색·대용량 인덱스</td></tr>
+  </table>
+  <ul>
+    <li>같은 IQL이 양쪽에서 동작 — RDB 우선, 전문검색 필요 시 OpenSearch 병행</li>
+    <li>MySQL: DATE는 UTC <code>YYYY-MM-DD HH:MM:SS</code> 자동 변환 · ansi 방언은 커스텀 필드 미지원</li>
+  </ul>
+</section>
+
+<section>
+  <h2>10. 필터 빌더 UI 연동</h2>
+  <p><code>?filter=</code>는 파서 AST와 같은 JSON 구조 — UI가 객체를 만들어 보내면 됩니다.</p>
+  <pre>{ "where": { "type": "Comparison", "field": "status",
+    "operator": "=", "value": { "kind": "string", "value": "Open" } },
+  "orderBy": [{ "field": "created", "direction": "DESC" }] }</pre>
+  <ul>
+    <li><code>print(ast)</code> → 텍스트 쿼리로 변환해 검색창에 표시 (왕복 보장)</li>
+    <li><b>저장된 필터</b> = AST JSON을 DB에 저장, <code>?filter=</code>로 재사용</li>
+    <li>core만 프론트에 넣으면 클라이언트에서 미리보기·문법 검증 가능</li>
+  </ul>
+</section>
+
+<section>
+  <h2>11. Jira형 앱의 전체 그림</h2>
+  <img class="diagram" src="../img/app-architecture.svg" alt="app architecture">
+  <p class="sub">파란색 = OpenIQL 담당 · 나머지(인증·워크플로우·이력 기록·UI) = 앱이 구현</p>
+</section>
+
+<section>
+  <h2>12. 보안 모델</h2>
+  <div class="cols">
+    <div>
+      <h3>OpenIQL이 방어</h3>
+      <ul>
+        <li>값은 전부 바인딩 파라미터</li>
+        <li>필드/테이블은 스키마 화이트리스트 + 식별자 패턴</li>
+        <li>DoS 한도: 쿼리 2KB · 깊이 10 · IN 100 · AST 깊이 1,000</li>
+        <li>?filter= JSON도 스키마 재검증</li>
+      </ul>
+    </div>
+    <div>
+      <h3>앱이 책임</h3>
+      <ul>
+        <li>어댑터 옵션(table·select)에 사용자 입력 금지</li>
+        <li>행 단위 권한 필터링 (§7 패턴)</li>
+        <li>Rate limiting · 인증 · 감사 로깅</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>13. 연동 체크리스트</h2>
+  <p>
+    <span class="tag">1. 스키마 정의 (필드 화이트리스트)</span>
+    <span class="tag">2. 어댑터 선택 + 옵션 설정</span>
+    <span class="tag">3. GET /issues?q= 엔드포인트</span>
+    <span class="tag">4. 인증 → ctx.userId 연결</span>
+    <span class="tag">5. 권한 WHERE 병합 (paramOffset)</span>
+    <span class="tag">6. changelogs 기록 (워크플로우 훅)</span>
+    <span class="tag">7. 필터 빌더 → ?filter=</span>
+    <span class="tag">8. tieBreaker + 페이지네이션</span>
+  </p>
+  <h3>검증된 조합</h3>
+  <p class="sub">PostgreSQL 16 · MariaDB 11 · OpenSearch 2 · node:sqlite — 실DB 통합 테스트 136개</p>
+</section>
+
+<section class="title">
+  <h2>더 자세한 내용</h2>
+  <p>docs/MANUAL.md — 사용 매뉴얼 (FAQ 포함)</p>
+  <p>docs/API.md — 공개 API 레퍼런스</p>
+  <p>docs/ARCHITECTURE.md — 명세 · spec/grammar.ebnf — 문법</p>
+  <p class="sub" style="margin-top:2em">github.com/yundo-main/openIQL</p>
+</section>
+
+<div class="hint"><span class="kbd">←</span> <span class="kbd">→</span> 이동 · <span class="kbd">Home</span>/<span class="kbd">End</span> 처음/끝</div>
+<div class="pager"></div>
+
+<script>
+  const slides = [...document.querySelectorAll('section')];
+  const pager = document.querySelector('.pager');
+  let i = Math.min(Math.max(parseInt(location.hash.slice(1), 10) || 0, 0), slides.length - 1);
+  const show = () => {
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    pager.textContent = `${i + 1} / ${slides.length}`;
+    history.replaceState(null, '', '#' + i);
+  };
+  const go = d => { i = Math.min(Math.max(i + d, 0), slides.length - 1); show(); };
+  addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') go(1);
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(-1);
+    else if (e.key === 'Home') { i = 0; show(); }
+    else if (e.key === 'End') { i = slides.length - 1; show(); }
+  });
+  addEventListener('click', e => {
+    if (e.clientX > innerWidth / 2) go(1); else go(-1);
+  });
+  show();
+</script>
+</body>
+</html>
